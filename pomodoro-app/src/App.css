@@ -30,6 +30,15 @@
   padding-right: .20em;
 }
 
+input[type=submit] {
+  padding: 5px 15px;
+  background: #3dcaff;
+  border: 0 none;
+  cursor: pointer;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
 .startButton {
   color: black;
   border: 1px solid black;

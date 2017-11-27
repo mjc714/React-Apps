@@ -6,7 +6,7 @@ class BreakTime extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      interalBreakTime: 3,
+      intervalBreakTime: 3,
       endBreakTime: 15,
     };
     this.handleIntervalSubmit = this.handleIntervalSubmit.bind(this);
@@ -42,17 +42,16 @@ class BreakTime extends React.Component {
       <div className="breakTimes">
         <form className="intervalBreakSelect" onSubmit={this.handleIntervalSubmit}>
           <label className="intervalBreakLabel">
-            Break time:
+            Interval Break time:
           </label>
           <select className="intervalBreakTime" value={this.state.intervalBreakTime} onChange={this.handleIntervalChange}>
             <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
-          </select>
-
+          </select><br />
           <input className="submit" type="submit" value="Submit" />
         </form>
-
+        <br />
         <form className="endBreakSelect" onSubmit={this.handleEndSubmit}>
           <label className="endBreakLabel">
             End Break Time:
@@ -64,7 +63,7 @@ class BreakTime extends React.Component {
             <option value="18">18</option>
             <option value="19">19</option>
             <option value="20">20</option>
-          </select>
+          </select><br />
           <input className="submit" type="submit" value="Submit" />
         </form>
       </div>
@@ -134,7 +133,7 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Pomodoro Timer</h1>
-        </header>
+        </header> <br />
         <BreakTime></BreakTime> <br />
         <Start></Start>
         <Timer></Timer>
