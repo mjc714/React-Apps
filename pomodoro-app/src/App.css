@@ -33,7 +33,7 @@
 input[type=submit] {
   padding: 5px 15px;
   background: #3dcaff;
-  border: 0 none;
+  border: 1px solid black;
   cursor: pointer;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -42,10 +42,16 @@ input[type=submit] {
 .startButton {
   color: black;
   border: 1px solid black;
-  background-color: #008CBA;
+  /* background-color: #008CBA;
   height: 25px;
   width: 100px;
-  border-radius: 6px;
+  border-radius: 6px; */
+  padding: 5px 15px;
+  background: #3dcaff;
+  width: 6em;
+  cursor: pointer;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
 
 @keyframes App-logo-spin {
