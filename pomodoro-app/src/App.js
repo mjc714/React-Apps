@@ -67,12 +67,13 @@ class Start extends React.Component {
       seconds: 0,
     };
     this.timer = 0;
+    this.interval = 0;
     this.startTimer = this.startTimer.bind(this);
     this.countDown = this.countDown.bind(this);
   }
 
   formatTime(minutes, seconds) {
-    if (seconds < 10 || seconds >= 0) {
+    if (seconds < 10 && seconds >= 0) {
       seconds = '0' + seconds;
     } else if (seconds < 0) {
       seconds = 59;
@@ -86,7 +87,7 @@ class Start extends React.Component {
 
   // Start the timer.
   startTimer() {
-    if (this.timer == 0) {
+    if (this.timer === 0) {
       this.timer = setInterval(this.countDown, 1000);
     }
   }
@@ -95,7 +96,7 @@ class Start extends React.Component {
   countDown() {
     let minutes = this.state.minutes;
     let seconds = this.state.seconds - 1;
-    if(seconds < 0){
+    if (seconds < 0) {
       minutes = this.state.minutes - 1;
       seconds = 59;
     }
@@ -103,8 +104,12 @@ class Start extends React.Component {
       minutes: minutes,
       seconds: seconds,
     });
-    if(minutes == 0){
+    if (minutes === 0) {
       alert("Your timer has ended, take a break!");
+      this.interval += 1;
+      clearInterval(this.timer);
+    }
+    if(this.interval === 4){
       clearInterval(this.timer);
     }
   }
@@ -118,39 +123,36 @@ class Start extends React.Component {
         <div className="timer">
           {this.formatTime(this.state.minutes, this.state.seconds)}
         </div>
+        <br />
+        <div className="interval">
+          Interval: {this.interval}
+        </div>
       </div>
     );
   }
 }
 
-// Timer component that will count down from
-// 25 minutes and breaks(3-5 or 15-30).
-class Timer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      minutes: 25,
-      seconds: 59,
-      interval: 0,
-      interalBreak: 0,
-      endBreak: 0,
-    };
-    this.tick = this.tick.bind(this);
-  }
+// // Timer component that will count down from
+// // 25 minutes and breaks(3-5 or 15-30).
+// class Timer extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       // minutes: 25,
+//       // seconds: 59,
+//       // interval: 0,
+//       // interalBreak: 0,
+//       // endBreak: 0,
+//     };
+//   }
 
-  tick() {
-    this.setState(prevState => ({
-      time: prevState.time + 1
-    }));
-  }
-
-  render() {
-    return (
-      <div>
-      </div>
-    );
-  }
-}
+//   render() {
+//     return (
+//       <div>
+//       </div>
+//     );
+//   }
+// }
 
 class App extends Component {
   render() {
@@ -162,7 +164,7 @@ class App extends Component {
         </header> <br />
         <BreakTime></BreakTime> <br />
         <Start></Start>
-        <Timer></Timer>
+        {/* <Timer></Timer> */}
       </div>
     );
   }
