@@ -9,32 +9,20 @@ class BreakTime extends React.Component {
       intervalBreakTime: 3,
       endBreakTime: 15,
     };
-    this.handleIntervalSubmit = this.handleIntervalSubmit.bind(this);
     this.handleIntervalChange = this.handleIntervalChange.bind(this);
-    this.handleEndSubmit = this.handleEndSubmit.bind(this);
     this.handleEndChange = this.handleEndChange.bind(this);
   }
 
-  // Handle change in dropdown menu.
+  // Update intervalBreakTime state value to what is
+  // selected in the dropdown.
   handleIntervalChange(e) {
-    // Update breakTime state value to
-    // what is selected in the dropdown.
     this.setState({ intervalBreakTime: e.target.value });
   }
 
+  // Update endBreakTime state value to what is
+  // selected in the dropdown.
   handleEndChange(e) {
     this.setState({ endBreakTime: e.target.value });
-  }
-
-  // Handle submit input.
-  handleIntervalSubmit(e) {
-    alert("Submitted interval break time: " + this.state.intervalBreakTime);
-    e.preventDefault();
-  }
-
-  handleEndSubmit(e) {
-    alert("Submitted end break time: " + this.state.endBreakTime);
-    e.preventDefault();
   }
 
   render() {
@@ -42,14 +30,14 @@ class BreakTime extends React.Component {
       <div className="breakTimes">
         <form className="intervalBreakSelect" onSubmit={this.handleIntervalSubmit}>
           <label className="intervalBreakLabel">
-            Interval Break time:
+            Interval Break Time:
           </label>
           <select className="intervalBreakTime" value={this.state.intervalBreakTime} onChange={this.handleIntervalChange}>
             <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
           </select><br />
-          <input className="submit" type="submit" value="Submit" />
+          {/* <input className="submit" type="submit" value="Submit" /> */}
         </form>
         <br />
         <form className="endBreakSelect" onSubmit={this.handleEndSubmit}>
@@ -64,7 +52,7 @@ class BreakTime extends React.Component {
             <option value="19">19</option>
             <option value="20">20</option>
           </select><br />
-          <input className="submit" type="submit" value="Submit" />
+          {/* <input className="submit" type="submit" value="Submit" /> */}
         </form>
       </div>
     );
@@ -75,38 +63,77 @@ class Start extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      time: 0,
+      minutes: 25,
+      seconds: 0,
     };
+    this.timer = 0;
     this.startTimer = this.startTimer.bind(this);
-    this.endTimer = this.endTimer.bind(this);
+    this.countDown = this.countDown.bind(this);
+  }
+
+  formatTime(minutes, seconds) {
+    if (seconds < 10 || seconds >= 0) {
+      seconds = '0' + seconds;
+    } else if (seconds < 0) {
+      seconds = 59;
+    }
+
+    if (minutes < 10) {
+      minutes = '0' + minutes;
+    }
+    return minutes + ':' + seconds;
   }
 
   // Start the timer.
-  startTimer(e) {
-    alert("Hello World");
+  startTimer() {
+    if (this.timer == 0) {
+      this.timer = setInterval(this.countDown, 1000);
+    }
   }
 
-  // Signal to user that time as expired.
-  endTimer(e) {
-    alert("Timer has Expired");
+  // Countdown time until 0, where alert will be played.
+  countDown() {
+    let minutes = this.state.minutes;
+    let seconds = this.state.seconds - 1;
+    if(seconds < 0){
+      minutes = this.state.minutes - 1;
+      seconds = 59;
+    }
+    this.setState({
+      minutes: minutes,
+      seconds: seconds,
+    });
+    if(minutes == 0){
+      alert("Your timer has ended, take a break!");
+      clearInterval(this.timer);
+    }
   }
 
   render() {
     return (
-      <button className="startButton" onClick={() => this.startTimer()}>
-        Start
-    </button>
+      <div>
+        <button className="startButton" onClick={() => this.startTimer()}>
+          Start
+          </button>
+        <div className="timer">
+          {this.formatTime(this.state.minutes, this.state.seconds)}
+        </div>
+      </div>
     );
   }
 }
 
-// Timer component that will render a timer
-// to count to 25 minutes and breaks(3-5 or 15-30).
+// Timer component that will count down from
+// 25 minutes and breaks(3-5 or 15-30).
 class Timer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      time: 0,
+      minutes: 25,
+      seconds: 59,
+      interval: 0,
+      interalBreak: 0,
+      endBreak: 0,
     };
     this.tick = this.tick.bind(this);
   }
@@ -120,7 +147,6 @@ class Timer extends React.Component {
   render() {
     return (
       <div>
-        Time: {this.state.time}
       </div>
     );
   }
