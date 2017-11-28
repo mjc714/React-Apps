@@ -63,11 +63,12 @@ class Start extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      minutes: 25,
-      seconds: 0,
+      minutes: 0,
+      seconds: 10,
+      interval: 0,
+      restart: false,
     };
     this.timer = 0;
-    this.interval = 0;
     this.startTimer = this.startTimer.bind(this);
     this.countDown = this.countDown.bind(this);
   }
@@ -75,7 +76,7 @@ class Start extends React.Component {
   formatTime(minutes, seconds) {
     if (seconds < 10 && seconds >= 0) {
       seconds = '0' + seconds;
-    } else if (seconds < 0) {
+    } else if (seconds < 0 && minutes > 0) {
       seconds = 59;
     }
 
@@ -90,26 +91,41 @@ class Start extends React.Component {
     if (this.timer === 0) {
       this.timer = setInterval(this.countDown, 1000);
     }
+    if (this.state.restart === true) {
+      this.timer = setInterval(this.countDown, 1000);
+    }
   }
 
-  // Countdown time until 0, where alert will be played.
+  // Countdown time until 0, where alert will be sound.
   countDown() {
     let minutes = this.state.minutes;
     let seconds = this.state.seconds - 1;
+
     if (seconds < 0) {
       minutes = this.state.minutes - 1;
       seconds = 59;
     }
+
     this.setState({
       minutes: minutes,
       seconds: seconds,
     });
-    if (minutes === 0) {
+
+    if (minutes === 0 && seconds === 0) {
+      this.setState({
+        minutes: 0,
+        seconds: 10,
+        interval: this.state.interval + 1,
+        restart: true,
+      });
       alert("Your timer has ended, take a break!");
-      this.interval += 1;
       clearInterval(this.timer);
     }
-    if(this.interval === 4){
+
+    if (this.state.interval === 4) {
+      this.setState({
+        restart: false,
+      });
       clearInterval(this.timer);
     }
   }
@@ -125,7 +141,7 @@ class Start extends React.Component {
         </div>
         <br />
         <div className="interval">
-          Interval: {this.interval}
+          Interval: {this.state.interval}
         </div>
       </div>
     );
