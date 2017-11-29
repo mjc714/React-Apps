@@ -73,11 +73,8 @@ class EndBreakTimeInput extends React.Component {
 class StartTimer extends React.Component {
   constructor(props) {
     super(props);
-    this.timer = 0;
-    this.startTimer = this.startTimer.bind(this);
-    this.countDown = this.countDown.bind(this);
-    // this.changeIntervalBreakTime = this.changeIntervalBreakTime.bind(this);
-    // this.changeEndBreakTime = this.changeEndBreakTime.bind(this);
+    this.changeIntervalBreakTime = this.changeIntervalBreakTime.bind(this);
+    this.changeEndBreakTime = this.changeEndBreakTime.bind(this);
     this.changeMinutes = this.changeMinutes.bind(this);
     this.changeSeconds = this.changeSeconds.bind(this);
     this.changeRestart = this.changeRestart.bind(this);
@@ -85,13 +82,13 @@ class StartTimer extends React.Component {
     this.changeLongBreak = this.changeLongBreak.bind(this);
   }
 
-  // changeIntervalBreakTime(e) {
-  //   this.props.onIntervalBreakTimeChange(e.target.value);
-  // }
+  changeIntervalBreakTime(e) {
+    this.props.onIntervalBreakTimeChange(e.target.value);
+  }
 
-  // changeEndBreakTime(e) {
-  //   this.props.onEndBreakTimeChange(e.target.value);
-  // }
+  changeEndBreakTime(e) {
+    this.props.onEndBreakTimeChange(e.target.value);
+  }
 
   changeMinutes(e) {
     this.props.onMinuteChange(e.target.value);
@@ -117,87 +114,43 @@ class StartTimer extends React.Component {
     this.props.onLongBreakChange(e.target.value);
   }
 
-  // Format the time displayed in mm:ss format.
-  formatTime(minutes, seconds) {
-    if (seconds < 10 && seconds >= 0) {
-      seconds = '0' + seconds;
-    } else if (seconds < 0 && minutes > 0) {
-      seconds = 59;
-    }
-
+  // Format the minutes displayed in 'mm' format.
+  formatMinutes(minutes) {
     if (minutes < 10) {
       minutes = '0' + minutes;
     }
-    return minutes + ':' + seconds;
+    return minutes + ':';
   }
 
-  // Start a timer.
-  startTimer() {
-    if (this.timer === 0) {
-      this.timer = setInterval(this.countDown, 1000);
-    }
-    if (this.props.restart === true) {
-      this.timer = setInterval(this.countDown, 1000);
-    }
-    if (this.props.shortBreak === true) {
-      alert("SHORT BREAK!");
-      this.timer = setInterval(this.countDown, 1000);
-    }
-    if (this.props.longBreak === true) {
-      alert("LONG BREAK!");
-      this.timer = setInterval(this.countDown, 1000);
-    }
-  }
-
-  // Countdown time until 0, where alert will be sound.
-  countDown() {
-    let minutes = this.props.minutes;
-    let seconds = this.props.seconds - 1;
-    let interval = this.props.interval;
-    let restart = this.props.restart;
-    let shortBreak = this.props.shortBreak;
-    let longBreak = this.props.longBreak;
-
-    if (seconds < 0) {
-      minutes = this.props.minutes - 1;
+  // Format the seconds displayed in 'ss' format.
+  formatSeconds(seconds) {
+    if (seconds < 10 && seconds >= 0) {
+      seconds = '0' + seconds;
+    } else if (seconds < 0) {
       seconds = 59;
     }
-
-    // this.props.minutes = minutes;
-    // this.props.seconds = seconds;
-
-    if (minutes === 0 && seconds === 0) {
-      this.props.minutes = 0;
-      this.props.seconds = 5;
-      this.props.interval = this.props.interval + 1;
-      this.props.restart = false;
-      this.props.shortBreak = true;
-
-      alert("Your timer has ended, take a break!");
-      clearInterval(this.timer);
-    }
-
-    if (this.props.interval === 4) {
-      this.props.interval = 0;
-      this.props.restart = false;
-      this.props.longBreak = true;
-
-      clearInterval(this.timer);
-    }
+    return seconds;
   }
-
   render() {
+    const minutesFunc = this.props.minutes;
+    const secondsFunc = this.props.seconds;
+    const intervalFunc = this.props.interval;
     return (
       <div>
-        <button className="startButton" onClick={() => this.startTimer()}>
+        <button className="startButton" onClick={() => this.props.onClick()}>
           Start
           </button>
         <div className="timer">
-          {this.formatTime(this.props.minutes, this.props.seconds)}
+          <span onChange={this.changeMinutes}>
+            {this.formatMinutes(this.props.minutesFunc)}
+          </span>
+          <span onChange={this.changeSeconds}>
+            {this.formatSeconds(this.props.secondsFunc)}
+          </span>
         </div>
         <br />
-        <div className="interval">
-          Interval: {this.props.interval}
+        <div className="interval" onChange={this.changeInterval}>
+          Interval: {this.props.intervalFunc}
         </div>
       </div>
     );
@@ -219,6 +172,7 @@ class Timer extends React.Component {
       shortBreak: false,
       longBreak: false,
     };
+    this.timer = 0;
     this.handleIntervalChange = this.handleIntervalChange.bind(this);
     this.handleEndChange = this.handleEndChange.bind(this);
     this.handleSecondChange = this.handleSecondChange.bind(this);
@@ -226,6 +180,8 @@ class Timer extends React.Component {
     this.handleRestartChange = this.handleRestartChange.bind(this);
     this.handleShortBreakChange = this.handleShortBreakChange.bind(this);
     this.handleLongBreakChange = this.handleLongBreakChange.bind(this);
+    this.handleStartClick = this.handleStartClick.bind(this);
+    this.handleCountDown = this.handleCountDown.bind(this);
   }
 
   handleIntervalChange(time) {
@@ -236,38 +192,97 @@ class Timer extends React.Component {
     this.setState({ endBreakTime: time });
   }
 
-  handleSecondChange(seconds) {
-    this.setState({ seconds: seconds });
+  handleSecondChange(secondsFunc) {
+    this.setState({ seconds: secondsFunc });
   }
 
-  handleMinuteChange(minutes) {
-    this.setState({ minute: minutes });
+  handleMinuteChange(minutesFunc) {
+    this.setState({ minute: minutesFunc });
   }
 
-  handleIntervalCounterChange(interval) {
-    this.setState({ interval: interval });
-  }
-  handleRestartChange(restart) {
-    this.setState({ restart: restart });
+  handleIntervalCounterChange(intervalFunc) {
+    this.setState({ interval: intervalFunc });
   }
 
-  handleShortBreakChange(shortBreak) {
-    this.setState({ shortBreak: shortBreak });
+  handleRestartChange(restartFunc) {
+    this.setState({ restart: restartFunc });
   }
 
-  handleLongBreakChange(longBreak) {
-    this.setState({ longBreak: longBreak });
+  handleShortBreakChange(shortBreakFunc) {
+    this.setState({ shortBreak: shortBreakFunc });
   }
 
-  render() {
-    var intervalBreakTime = this.state.intervalBreakTime;
-    var endBreakTime = this.state.endBreakTime;
-    var seconds = this.state.seconds;
+  handleLongBreakChange(longBreakFunc) {
+    this.setState({ longBreak: longBreakFunc });
+  }
+
+  // Countdown time until 0, where alert will be sound.
+  handleCountDown() {
     var minutes = this.state.minutes;
+    var seconds = this.state.seconds - 1;
     var interval = this.state.interval;
     var restart = this.state.restart;
     var shortBreak = this.state.shortBreak;
     var longBreak = this.state.longBreak;
+
+    if (seconds < 0) {
+      minutes = this.state.minutes - 1;
+      seconds = 59;
+    }
+
+    this.setState({
+      minutes: minutes,
+      seconds: seconds,
+    });
+
+    if (minutes === 0 && seconds === 0) {
+      this.setState({
+        minutes: 0,
+        seconds: 5,
+        interval: this.state.interval + 1,
+        restart: false,
+        shortBreak: true,
+      });
+      alert("Your timer has ended, take a break!");
+      clearInterval(this.timer);
+    }
+
+    if (this.state.interval === 4) {
+      this.setState({
+        interval: 0,
+        restart: false,
+        longBreak: true,
+      });
+      clearInterval(this.timer);
+    }
+  }
+
+  handleStartClick() {
+    if (this.timer === 0) {
+      this.timer = setInterval(this.handleCountDown, 1000);
+    }
+    if (this.props.restart === true) {
+      this.timer = setInterval(this.handleCountDown, 1000);
+    }
+    if (this.props.shortBreak === true) {
+      alert("SHORT BREAK!");
+      this.timer = setInterval(this.handleCountDown, 1000);
+    }
+    if (this.props.longBreak === true) {
+      alert("LONG BREAK!");
+      this.timer = setInterval(this.handleCountDown, 1000);
+    }
+  }
+
+  render() {
+    const intervalBreakTime = this.state.intervalBreakTime;
+    const endBreakTime = this.state.endBreakTime;
+    const seconds = this.state.seconds;
+    const minutes = this.state.minutes;
+    const interval = this.state.interval;
+    const restart = this.state.restart;
+    const shortBreak = this.state.shortBreak;
+    const longBreak = this.state.longBreak;
 
     return (
       <div className="timerChildren">
@@ -278,18 +293,19 @@ class Timer extends React.Component {
           time={endBreakTime}
           onEndChange={this.handleEndChange} /><br />
         <StartTimer
-          seconds={seconds}
-          minutes={minutes}
-          restart={restart}
-          shortBreak={shortBreak}
-          longBreak={longBreak}
-          interval={interval}
+          secondsFunc={seconds}
+          minutesFunc={minutes}
+          restartFunc={restart}
+          shortBreakFunc={shortBreak}
+          longBreakFunc={longBreak}
+          intervalFunc={interval}
           onSecondsChange={this.handleSecondChange}
           onMinuteChange={this.handleMinuteChange}
           onRestartChange={this.handleRestartChange}
           onShortBreakChange={this.handleShortBreakChange}
           onLongBreakChange={this.handleLongBreakChange}
-          onIntervalChange={this.handleIntervalCounterChangeChange} />
+          onIntervalChange={this.handleIntervalCounterChangeChange}
+          onClick={() => this.handleStartClick()} />
       </div>
     );
   }
