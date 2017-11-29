@@ -147,7 +147,7 @@ class Timer extends React.Component {
     this.state = {
       intervalBreakTime: 3,
       endBreakTime: 15,
-      minutes: 25,
+      minutes: 1,
       seconds: 0,
       interval: 0,
       restart: false,
@@ -192,7 +192,7 @@ class Timer extends React.Component {
     var longBreak = this.state.longBreak;
 
     if (seconds < 0) {
-      minutes = this.setState({ minutes: minutes - 1 });
+      minutes = minutes - 1;
       seconds = 59;
     }
 
@@ -206,7 +206,7 @@ class Timer extends React.Component {
     if (minutes === 0 && seconds === 0 && shortBreak === true) {
       // Finished a short break, reset timer.
       this.setState({
-        minute: 25,
+        minutes: 1,
         seconds: 0,
         restart: true,
         shortBreak: false,
@@ -217,7 +217,7 @@ class Timer extends React.Component {
     } else if (minutes === 0 && seconds === 0 && longBreak === true) {
       // Finished longBreak, reset timer and interval.
       this.setState({
-        minute: 25,
+        minutes: 1,
         seconds: 0,
         interval: 0,
         restart: true,
