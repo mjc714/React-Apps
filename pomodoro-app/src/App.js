@@ -62,6 +62,16 @@ class EndBreakTimeInput extends React.Component {
             <option value="18">18</option>
             <option value="19">19</option>
             <option value="20">20</option>
+            <option value="21">21</option>
+            <option value="22">22</option>
+            <option value="23">23</option>
+            <option value="24">24</option>
+            <option value="25">25</option>
+            <option value="26">26</option>
+            <option value="27">27</option>
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
           </select><br />
         </form>
       </div>
@@ -222,7 +232,7 @@ class Timer extends React.Component {
     else if (minutes === 0 && seconds === 0 && longBreak === false) {
       this.setState({
         minutes: 0,
-        seconds: 3,
+        seconds: this.state.intervalBreakTime,
         interval: this.state.interval + 1,
         restart: false,
         shortBreak: true,
@@ -237,7 +247,7 @@ class Timer extends React.Component {
     if (this.state.interval === 4) {
       this.setState({
         minutes: 0,
-        seconds: 5,
+        seconds: this.state.endBreakTime,
         interval: 0,
         restart: false,
         shortBreak: false,
@@ -248,6 +258,8 @@ class Timer extends React.Component {
     }
   }
 
+  // Call countdown in interval with button click
+  // with respect to the state of the timer(on/not on break).
   handleStartClick() {
     // Start initial timer.
     if (this.timer === 0) {
@@ -255,10 +267,8 @@ class Timer extends React.Component {
     } else if (this.state.restart === true) {
       this.timer = setInterval(this.handleCountDown, 1000);
     } else if (this.state.shortBreak === true) {
-      // alert("SHORT BREAK!");
       this.timer = setInterval(this.handleCountDown, 1000);
     } else if (this.state.longBreak === true) {
-      // alert("LONG BREAK!");
       this.timer = setInterval(this.handleCountDown, 1000);
     }
   }
