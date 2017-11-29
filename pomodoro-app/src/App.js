@@ -2,49 +2,60 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-class BreakTime extends React.Component {
+// Receive input for interval break dropdown.
+class IntervalBreakTimeInput extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      intervalBreakTime: 3,
-      endBreakTime: 15,
-    };
     this.handleIntervalChange = this.handleIntervalChange.bind(this);
-    this.handleEndChange = this.handleEndChange.bind(this);
   }
 
   // Update intervalBreakTime state value to what is
   // selected in the dropdown.
   handleIntervalChange(e) {
-    this.setState({ intervalBreakTime: e.target.value });
+    this.props.onIntervalChange(e.target.value);
+  }
+
+  render() {
+    const intervalBreakTime = this.props.intervalBreakTime;
+    return (
+      <div className="breakTimes">
+        <form className="intervalBreakSelect">
+          <label className="intervalBreakLabel">
+            Interval Break Time:
+          </label>
+          <select className="intervalBreakTime" value={intervalBreakTime} onChange={this.handleIntervalChange}>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select><br />
+        </form>
+      </div>
+    );
+  }
+}
+
+// Receive input for end break dropdown.
+class EndBreakTimeInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleEndChange = this.handleEndChange.bind(this);
   }
 
   // Update endBreakTime state value to what is
   // selected in the dropdown.
   handleEndChange(e) {
-    this.setState({ endBreakTime: e.target.value });
+    this.props.onEndChange(e.target.value);
   }
 
   render() {
+    const endBreakTime = this.props.endBreakTime;
     return (
       <div className="breakTimes">
-        <form className="intervalBreakSelect" onSubmit={this.handleIntervalSubmit}>
-          <label className="intervalBreakLabel">
-            Interval Break Time:
-          </label>
-          <select className="intervalBreakTime" value={this.state.intervalBreakTime} onChange={this.handleIntervalChange}>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select><br />
-          {/* <input className="submit" type="submit" value="Submit" /> */}
-        </form>
-        <br />
-        <form className="endBreakSelect" onSubmit={this.handleEndSubmit}>
+        <form className="endBreakSelect">
           <label className="endBreakLabel">
             End Break Time:
           </label>
-          <select className="endBreakTime" value={this.state.endBreakTime} onChange={this.handleEndChange}>
+          <select className="endBreakTime" value={endBreakTime} onChange={this.handleEndChange}>
             <option value="15">15</option>
             <option value="16">16</option>
             <option value="17">17</option>
@@ -52,27 +63,30 @@ class BreakTime extends React.Component {
             <option value="19">19</option>
             <option value="20">20</option>
           </select><br />
-          {/* <input className="submit" type="submit" value="Submit" /> */}
         </form>
       </div>
     );
   }
 }
 
+// Start a respective timer.
 class Start extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       minutes: 0,
-      seconds: 10,
+      seconds: 5,
       interval: 0,
       restart: false,
+      shortBreak: false,
+      longBreak: false,
     };
     this.timer = 0;
     this.startTimer = this.startTimer.bind(this);
     this.countDown = this.countDown.bind(this);
   }
 
+  // Format the time displayed in mm:ss format.
   formatTime(minutes, seconds) {
     if (seconds < 10 && seconds >= 0) {
       seconds = '0' + seconds;
@@ -86,12 +100,20 @@ class Start extends React.Component {
     return minutes + ':' + seconds;
   }
 
-  // Start the timer.
+  // Start a timer.
   startTimer() {
     if (this.timer === 0) {
       this.timer = setInterval(this.countDown, 1000);
     }
     if (this.state.restart === true) {
+      this.timer = setInterval(this.countDown, 1000);
+    }
+    if (this.state.shortBreak === true) {
+      alert("SHORT BREAK!");
+      this.timer = setInterval(this.countDown, 1000);
+    }
+    if (this.state.longBreak === true) {
+      alert("LONG BREAK!");
       this.timer = setInterval(this.countDown, 1000);
     }
   }
@@ -114,9 +136,10 @@ class Start extends React.Component {
     if (minutes === 0 && seconds === 0) {
       this.setState({
         minutes: 0,
-        seconds: 10,
+        seconds: 5,
         interval: this.state.interval + 1,
-        restart: true,
+        restart: false,
+        shortBreak: true,
       });
       alert("Your timer has ended, take a break!");
       clearInterval(this.timer);
@@ -124,7 +147,9 @@ class Start extends React.Component {
 
     if (this.state.interval === 4) {
       this.setState({
+        interval: 0,
         restart: false,
+        longBreak: true,
       });
       clearInterval(this.timer);
     }
@@ -148,27 +173,50 @@ class Start extends React.Component {
   }
 }
 
-// // Timer component that will count down from
-// // 25 minutes and breaks(3-5 or 15-30).
-// class Timer extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       // minutes: 25,
-//       // seconds: 59,
-//       // interval: 0,
-//       // interalBreak: 0,
-//       // endBreak: 0,
-//     };
-//   }
+// Timer parent to contain BreakTime
+// and Start.
+class Timer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      intervalBreakTime: 3,
+      endBreakTime: 15,
+      minutes: 0,
+      seconds: 0,
+      interval: 0,
+      restart: false,
+      shortBreak: false,
+      longBreak: false,
+    };
+    this.handleIntervalChange = this.handleIntervalChange.bind(this);
+    this.handleEndChange = this.handleEndChange.bind(this);
+  }
 
-//   render() {
-//     return (
-//       <div>
-//       </div>
-//     );
-//   }
-// }
+  handleIntervalChange(time) {
+    this.setState({ intervalBreakTime: time });
+  }
+
+  handleEndChange(time) {
+    this.setState({ endBreakTime: time });
+  }
+
+  render() {
+    const intervalBreakTime = this.state.intervalBreakTime;
+    const endBreakTime = this.state.endBreakTime;
+
+    return (
+      <div className="timerChildren">
+        <IntervalBreakTimeInput
+          time={intervalBreakTime}
+          onIntervalChange={this.handleIntervalChange} /><br />
+        <EndBreakTimeInput
+          time={endBreakTime}
+          onEndChange={this.handleEndChange} /><br />
+        <Start></Start>
+      </div>
+    );
+  }
+}
 
 class App extends Component {
   render() {
@@ -178,9 +226,10 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Pomodoro Timer</h1>
         </header> <br />
-        <BreakTime></BreakTime> <br />
+        {/* <BreakTime></BreakTime> <br />
         <Start></Start>
-        {/* <Timer></Timer> */}
+        <Timer></Timer> */}
+        <Timer></Timer>
       </div>
     );
   }
