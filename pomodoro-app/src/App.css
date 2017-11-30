@@ -8,7 +8,8 @@
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+  height: auto;
+  width: 10%;
 }
 
 .App-header {
@@ -19,7 +20,7 @@
 }
 
 .App-title {
-  font-size: 1.5em;
+  font-size: 1.5vw;
 }
 
 .App-intro {
@@ -27,17 +28,29 @@
 }
 
 .intervalBreakLabel {
+  font-size: 1.2vw;
   padding-right: .20em;
 }
 
 .endBreakLabel {
+  font-size: 1.2vw;
   padding-right: .20em;
+}
+
+.intervalBreakTime {
+  font-size: 1vw;
+}
+
+.endBreakTime {
+  font-size: 1vw;
 }
 
 .startButton {
   color: black;
   border: 1px solid black;
+  font-size: 1.5vw;
   padding: 5px 15px;
+  margin-bottom: 0.5em;
   background: #00aa1a;
   width: 6em;
   cursor: pointer;
@@ -48,13 +61,15 @@
 .timer {
   font-size: 2vw;
   border: 1px solid black;
-  padding: 5px 15px;
+  text-align: center;
+  width: 20%;
+  padding: 1em;
+  margin: 0 auto;
   border-radius: 5px;
-  margin: 0.5em 21.5em 0em 21.5em;
 }
 
 .interval {
-  font-size: 1.5em;
+  font-size: 1.5vw;
 }
 
 @keyframes App-logo-spin {
