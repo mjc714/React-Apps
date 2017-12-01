@@ -156,8 +156,10 @@ class Timer extends React.Component {
     this.state = {
       intervalBreakTime: 3,
       endBreakTime: 15,
-      minutes: 0, // 25
-      seconds: 3,
+      minutes: 25,
+      seconds: 0,
+      // minutes: 0,
+      // seconds: 3,
       interval: 0,
       restart: false,
       shortBreak: false,
@@ -234,8 +236,10 @@ class Timer extends React.Component {
     if (minutes === 0 && seconds === 0 && shortBreak === true) {
       // Finished a short break, reset timer.
       this.setState({
-        minutes: 0, // 25
-        seconds: 3,
+        minutes: 25,
+        seconds: 0,
+        // minutes: 0,
+        // seconds: 3,
         restart: true,
         shortBreak: false,
       });
@@ -245,8 +249,10 @@ class Timer extends React.Component {
     } else if (minutes === 0 && seconds === 0 && longBreak === true) {
       // Finished longBreak, reset timer and interval.
       this.setState({
-        minutes: 0, // 25
-        seconds: 3,
+        minutes: 25,
+        seconds: 0,
+        // minutes: 0,
+        // seconds: 3,
         interval: 0,
         restart: true,
         shortBreak: false,
@@ -260,10 +266,10 @@ class Timer extends React.Component {
     // On rerender start a short break timer.
     else if (minutes === 0 && seconds === 0 && longBreak === false) {
       this.setState({
-        // minutes: this.state.intervalBreakTime,
-        // seconds: 0,
-        minutes: 0,
-        seconds: 5,
+        minutes: this.state.intervalBreakTime,
+        seconds: 0,
+        // minutes: 0,
+        // seconds: 5,
         interval: this.state.interval + 1,
         restart: false,
         shortBreak: true,
@@ -277,10 +283,10 @@ class Timer extends React.Component {
     // and short breaks, start a long break.
     if (this.state.interval === 4) {
       this.setState({
-        // minutes: this.state.endBreakTime,
-        // seconds: 0,
-        minutes: 0,
-        seconds: 7,
+        minutes: this.state.endBreakTime,
+        seconds: 0,
+        // minutes: 0,
+        // seconds: 7,
         interval: 0,
         restart: false,
         shortBreak: false,
