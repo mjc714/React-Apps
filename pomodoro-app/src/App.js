@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import alertSound from './pup-alert.mp3';
 
 // Receive input for interval break dropdown.
 class IntervalBreakTimeInput extends React.Component {
@@ -85,6 +86,7 @@ class StartTimer extends React.Component {
     super(props);
     this.changeMinutes = this.changeMinutes.bind(this);
     this.changeSeconds = this.changeSeconds.bind(this);
+    this.changeDisable = this.changeDisable.bind(this);
   }
 
   changeMinutes(e) {
@@ -97,6 +99,10 @@ class StartTimer extends React.Component {
 
   changeInterval(e) {
     this.props.onIntervalChange(e.target.value);
+  }
+
+  changeDisable(e) {
+    this.props.onDisableChange(e.target.value);
   }
 
   // Format the minutes displayed in 'mm' format.
@@ -116,10 +122,13 @@ class StartTimer extends React.Component {
     }
     return seconds;
   }
+
   render() {
     return (
       <div>
-        <button className="startButton" onClick={() => this.props.onClick()}>
+        <button className="startButton" disabled={this.props.disableFunc}
+          onChange={this.changeDisable}
+          onClick={() => this.props.onClick()}>
           Start
           </button>
         <div className="timer">
@@ -147,12 +156,13 @@ class Timer extends React.Component {
     this.state = {
       intervalBreakTime: 3,
       endBreakTime: 15,
-      minutes: 25, // 25
-      seconds: 0,
+      minutes: 0, // 25
+      seconds: 3,
       interval: 0,
       restart: false,
       shortBreak: false,
       longBreak: false,
+      disabled: false,
     };
     this.timer = 0;
     this.handleIntervalChange = this.handleIntervalChange.bind(this);
@@ -162,6 +172,8 @@ class Timer extends React.Component {
     this.handleIntervalCounterChange = this.handleIntervalCounterChange.bind(this);
     this.handleStartClick = this.handleStartClick.bind(this);
     this.handleCountDown = this.handleCountDown.bind(this);
+    this.renderAlert = this.renderAlert.bind(this);
+    this.handleDisableChange = this.handleDisableChange.bind(this);
   }
 
   handleIntervalChange(time) {
@@ -182,6 +194,21 @@ class Timer extends React.Component {
 
   handleIntervalCounterChange(intervalFunc) {
     this.setState({ interval: intervalFunc });
+  }
+
+  handleDisableChange(disableFunc) {
+    this.setState({ disabled: disableFunc });
+  }
+
+  // Fires off a sound and alert message
+  // after timeout matching timer.
+  renderAlert(message) {
+    var audio = new Audio(alertSound);
+    return (
+      audio.play(),
+      alert(message),
+      this.setState({ disabled: false })
+    );
   }
 
   // Countdown time until 0, where alert will be sound.
@@ -207,24 +234,25 @@ class Timer extends React.Component {
     if (minutes === 0 && seconds === 0 && shortBreak === true) {
       // Finished a short break, reset timer.
       this.setState({
-        minutes: 25, // 25
-        seconds: 0,
+        minutes: 0, // 25
+        seconds: 3,
         restart: true,
         shortBreak: false,
       });
-      alert("Short break is over. Get back to work!");
+      this.renderAlert("Short break is over. Get back to work!");
       console.log('Finished a short break.');
       clearInterval(this.timer);
     } else if (minutes === 0 && seconds === 0 && longBreak === true) {
       // Finished longBreak, reset timer and interval.
       this.setState({
-        minutes: 25, // 25
-        seconds: 0,
+        minutes: 0, // 25
+        seconds: 3,
         interval: 0,
         restart: true,
         shortBreak: false,
         longBreak: false,
       });
+      this.renderAlert("Long break is over. Get back to work!");
       console.log('Finished long break.');
       clearInterval(this.timer);
     }
@@ -232,13 +260,15 @@ class Timer extends React.Component {
     // On rerender start a short break timer.
     else if (minutes === 0 && seconds === 0 && longBreak === false) {
       this.setState({
-        minutes: this.state.intervalBreakTime,
-        seconds: 0,
+        // minutes: this.state.intervalBreakTime,
+        // seconds: 0,
+        minutes: 0,
+        seconds: 5,
         interval: this.state.interval + 1,
         restart: false,
         shortBreak: true,
       });
-      alert("Your timer has ended, take a break!");
+      this.renderAlert("Your timer has ended, take a break!");
       console.log('Starting short break');
       clearInterval(this.timer);
     }
@@ -247,8 +277,10 @@ class Timer extends React.Component {
     // and short breaks, start a long break.
     if (this.state.interval === 4) {
       this.setState({
-        minutes: this.state.endBreakTime,
-        seconds: 0,
+        // minutes: this.state.endBreakTime,
+        // seconds: 0,
+        minutes: 0,
+        seconds: 7,
         interval: 0,
         restart: false,
         shortBreak: false,
@@ -262,6 +294,7 @@ class Timer extends React.Component {
   // Call countdown in interval with button click
   // with respect to the state of the timer(on/not on break).
   handleStartClick() {
+    this.setState({ disabled: true });
     // Start initial timer.
     if (this.timer === 0) {
       this.timer = setInterval(this.handleCountDown, 1000);
@@ -280,6 +313,7 @@ class Timer extends React.Component {
     const seconds = this.state.seconds;
     const minutes = this.state.minutes;
     const interval = this.state.interval;
+    const disabled = this.state.disabled;
 
     return (
       <div className="timerChildren">
@@ -293,6 +327,8 @@ class Timer extends React.Component {
           secondsFunc={seconds}
           minutesFunc={minutes}
           intervalFunc={interval}
+          disableFunc={disabled}
+          onDisableChange={this.handleDisableChange}
           onSecondsChange={this.handleSecondChange}
           onMinuteChange={this.handleMinuteChange}
           onIntervalChange={this.handleIntervalCounterChange}
