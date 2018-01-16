@@ -1,32 +1,25 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+
 import BusinessList from './components/BusinessList/BusinessList.js';
 import SearchBar from './components/SearchBar/SearchBar.js';
 
-// Temporary business info.
-const business = {
-  imageSrc: 'https://s3.amazonaws.com/codecademy-content/programs/react/ravenous/pizza.jpg',
-  name: 'Potato Pizzeria',
-  address: '1010 Potato Lane',
-  city: 'Potatoville',
-  state: 'NY',
-  zipCode: '10101',
-  category: 'Italian',
-  rating: 4.5,
-  reviewCount: 90
-};
+import Yelp from './util/Yelp.js';
 
-const businesses = [business,
-  business,
-  business,
-  business,
-  business,
-  business];
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      businesses: []
+    };
+    this.searchYelp = this.searchYelp.bind(this);
+  }
 
-class App extends Component {
   searchYelp(term, location, sortBy) {
-    console.log(`Searching Yelp with ${term}, ${location}, ${sortBy}`);
+    Yelp.search(term, location, sortBy)
+      .then(businesses => {
+        this.setState({ businesses: businesses });
+      });
   }
 
   render() {
@@ -34,7 +27,7 @@ class App extends Component {
       <div className="App">
         <h1>Reactvenous</h1>
         <SearchBar searchYelp={this.searchYelp} />
-        <BusinessList businesses={businesses} />
+        <BusinessList businesses={this.state.businesses} />
       </div>
     );
   }
