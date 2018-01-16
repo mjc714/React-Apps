@@ -1,0 +1,6 @@
+Handle erros in field inputs that cause binding issues.
+Make addresses clickable and open the address in Google Maps.
+Make images clickable and open the business' website.
+Clicking on a different sorting option automatically requeries the Yelp API
+    rather than clicking "Let's Go" or pressing 'Enter' again.
+Add autocompletion of addresses to the "Location" input.
