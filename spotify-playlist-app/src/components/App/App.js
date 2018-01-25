@@ -4,44 +4,15 @@ import './App.css';
 import SearchBar from '../SearchBar/SearchBar.js';
 import SearchResults from '../SearchResults/SearchResults.js';
 import Playlist from '../Playlist/Playlist.js';
+import Spotify from '../../utils/Spotify';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchResults: [
-        {
-          name: 'Tiny Dancer',
-          artist: 'Elton John',
-          album: 'Madman Across The Water',
-          id: '1',
-          uri: ''
-        },
-        {
-          name: 'I Miss You',
-          artist: 'blink-182',
-          album: 'blink-182',
-          id: '2',
-          uri: ''
-        },
-        {
-          name: 'Wish You Were Here',
-          artist: 'Pink Floyd',
-          album: 'Wish You Were Here',
-          id: '3',
-          uri: ''
-        }
-      ],
+      searchResults: [],
       playlistName: 'New Playlist',
-      playlistTracks: [
-        {
-          name: 'Tiny Dancer',
-          artist: 'Elton John',
-          album: 'Madman Across The Water',
-          id: '1',
-          uri: ''
-        }
-      ],
+      playlistTracks: [],
     }
     this.savePlaylist = this.savePlaylist.bind(this);
     this.addTrack = this.addTrack.bind(this);
@@ -50,15 +21,27 @@ class App extends React.Component {
     this.search = this.search.bind(this);
   }
 
-  savePlaylist() {
+  async savePlaylist() {
     let trackURIs = [];
     this.state.playlistTracks.forEach(track => {
       trackURIs.push(track.uri);
     });
+    await Spotify.savePlaylist(this.state.playlistName, trackURIs);
+    this.setState({
+      playlistName: 'New Playlist',
+      playlistTracks: []
+    });
   }
 
-  search(searchTerm) {
-    console.log(searchTerm);
+  async search(searchTerm) {
+    if (searchTerm === '') {
+      alert('Please enter a song, album, or artist.');
+      return;
+    }
+    Spotify.getAccessToken();
+    this.setState({
+      searchResults: await Spotify.search(searchTerm)
+    })
   }
 
   // Add a track by clicking the '+'.
@@ -95,7 +78,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>Ja<span className="highlight">mmm</span>in</h1>
+        <h1>Ja<span className="highlight">mm</span>ing</h1>
         <div className="App">
           <SearchBar onSearch={this.search} />
           <div className="App-playlist">
