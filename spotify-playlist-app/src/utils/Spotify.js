@@ -1,6 +1,6 @@
 let accessToken = '';
 const CLIENT_ID = '59f67eb6238d402694b6adf262d2a8d8';
-const REDIRECT_URI = 'http://localhost:3000/callback';
+const REDIRECT_URI = 'https://special-marble.surge.sh/';
 
 let Spotify = {
     getAccessToken() {
