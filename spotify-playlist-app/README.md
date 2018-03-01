@@ -1,4 +1,4 @@
-Spotify Playlist App
+# Spotify Playlist App
 
 https://special-marble.surge.sh/
 
